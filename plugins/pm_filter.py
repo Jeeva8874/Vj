@@ -1946,34 +1946,61 @@ async def cb_handler(client: Client, query: CallbackQuery):
             stream = f"{URL}watch/{str(log_msg.id)}/{quote_plus(get_name(log_msg))}?hash={get_hash(log_msg)}"
             download = f"{URL}{str(log_msg.id)}/{quote_plus(get_name(log_msg))}?hash={get_hash(log_msg)}"
 
-            xo = await query.message.reply_text(f'🔐')
-            await asyncio.sleep(1)
-            await xo.delete()
+    # Remove or comment out these debugging lines
+    # print(f"JS_WEB_PREMIUM: {JS_WEB_PREMIUM}")
+    # has_premium = await db.has_premium_access(user_id)
+    # print(f"User ID: {user_id}, Has Premium Access: {has_premium}")
 
-            await log_msg.reply_text(
-                text=f"•• ʟɪɴᴋ ɢᴇɴᴇʀᴀᴛᴇᴅ ꜰᴏʀ ɪᴅ #{user_id} \n•• ᴜꜱᴇʀɴᴀᴍᴇ : {username} \n\n•• ᖴᎥᒪᗴ Nᗩᗰᗴ : {fileName}",
-                quote=True,
-                disable_web_page_preview=True,
-                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🚀 Fast Download 🚀", url=download),  # we download Link
-                                                    InlineKeyboardButton('🖥️ Watch online 🖥️', url=stream)]])  # web stream Link
-            )
-            button = [[
-                InlineKeyboardButton("🚀 Fast Download 🚀", url=download),
-                InlineKeyboardButton('🖥️ Watch online 🖥️', url=stream)
-            ],[
-                InlineKeyboardButton("• ᴡᴀᴛᴄʜ ɪɴ ᴡᴇʙ ᴀᴘᴘ •", web_app=WebAppInfo(url=stream))
-            ]]
-            await query.message.reply_text(
-                text="•• ʟɪɴᴋ ɢᴇɴᴇʀᴀᴛᴇᴅ ☠︎⚔",
-                quote=True,
-                disable_web_page_preview=True,
-                reply_markup=InlineKeyboardMarkup(button)
-            )
-        except Exception as e:
-            print(e)  # print the error message
-            await query.answer(f"☣something went wrong sweetheart\n\n{e}", show_alert=True)
-            return
-    # don't change anything without contacting me @kingvj01
+       has_premium = await db.has_premium_access(user_id)
+
+    # Create the buttons based on the JS_WEB_PREMIUM and has_premium flags
+       if JS_WEB_PREMIUM and has_premium:
+          btn = [[
+               InlineKeyboardButton("Fᴀsᴛ Dᴏᴡɴʟᴏᴀᴅ", url=download),
+               InlineKeyboardButton("Wᴀᴛᴄʜ Oɴʟɪɴᴇ", url=online)
+               ], [
+               InlineKeyboardButton('🖥️ Watch On Telegram 🧿', web_app=WebAppInfo(url=online))
+               ], [
+               InlineKeyboardButton('❌ Cʟᴏsᴇ ❌', callback_data='close_data')
+               ]]
+       elif not JS_WEB_PREMIUM:
+        # Show buttons to everyone if JS_WEB_PREMIUM is False
+           btn = [[
+               InlineKeyboardButton("Fᴀsᴛ Dᴏᴡɴʟᴏᴀᴅ", url=download),
+               InlineKeyboardButton("Wᴀᴛᴄʜ Oɴʟɪɴᴇ", url=online)
+               ], [
+               InlineKeyboardButton('🖥️ Watch On Telegram 🧿', web_app=WebAppInfo(url=online))
+               ], [
+               InlineKeyboardButton('❌ Cʟᴏsᴇ ❌', callback_data='close_data')
+              ]]
+       else:
+        # Buttons or message for non-premium users if premium is enabled
+           btn = [[
+               InlineKeyboardButton("⭐️ Get Premium ", callback_data="seeplans")
+               ], [
+               InlineKeyboardButton("Gᴇᴛ Fʀᴇᴇ Tʀᴀɪʟ Fᴏʀ 𝟻 Mɪɴᴜᴛᴇꜱ ☺️", callback_data="get_trail")
+               ], [
+               InlineKeyboardButton('❌ Cʟᴏsᴇ ❌', callback_data='close_data')
+               ]]
+
+       await query.edit_message_reply_markup(
+          reply_markup=InlineKeyboardMarkup(btn)
+          )    
+       username = query.from_user.mention
+       await log_msg.reply_text(
+          text=f"#LinkGenerated\n\nIᴅ : <code>{user_id}</code>\nUꜱᴇʀɴᴀᴍᴇ : {username}\n\nNᴀᴍᴇ : {fileName}",
+          quote=True,
+          disable_web_page_preview=True,
+          reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton("🚀 Fᴀꜱᴛ Dᴏᴡɴʟᴏᴀᴅ", url=download),
+                InlineKeyboardButton('Wᴀᴛᴄʜ Oɴʟɪɴᴇ 🧿', url=online)
+            ] if JS_WEB_PREMIUM and has_premium else [
+                InlineKeyboardButton("🚀 Fᴀꜱᴛ Dᴏᴡɴʟᴏᴀᴅ", url=download),
+                InlineKeyboardButton('Wᴀᴛᴄʜ Oɴʟɪɴᴇ 🧿', url=online)
+            ]
+        ])
+       )
 
     elif query.data == "reqinfo":
         await query.answer(text=script.REQINFO, show_alert=True)
@@ -1985,32 +2012,35 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.answer(text=script.SINFO, show_alert=True)
 
     elif query.data == "start":
-        if PREMIUM_AND_REFERAL_MODE == True:
-            buttons = [[
-                InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
-            ],[
-                InlineKeyboardButton('Eᴀʀɴ Mᴏɴᴇʏ 💸', callback_data="shortlink_info"),
-                InlineKeyboardButton('⌬ Mᴏᴠɪᴇ Gʀᴏᴜᴘ', url=GRP_LNK)
-            ],[
-                InlineKeyboardButton('〄 Hᴇʟᴘ', callback_data='help'),
-                InlineKeyboardButton('⍟ Aʙᴏᴜᴛ', callback_data='about')
-            ],[
-                InlineKeyboardButton('💳 Gᴇᴛ Fʀᴇᴇ Oʀ Pᴀɪᴅ Sᴜʙsᴄʀɪᴘᴛɪᴏɴ 💳', callback_data='subscription')
-            ],[
-                InlineKeyboardButton('✇ Jᴏɪɴ Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ ✇', url=CHNL_LNK)
-            ]]
+    buttons = [[
+                    InlineKeyboardButton('☆ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ☆', url=f'http://telegram.me/{temp.U_NAME}?startgroup=true')
+                ],[
+                    InlineKeyboardButton('💸 ᴇᴀʀɴ ᴍᴏɴᴇʏ 💸', callback_data="shortlink_info"),
+                    InlineKeyboardButton('✇ Sᴜᴘᴘᴏʀᴛ ✇', callback_data='JoinUᴘᴅᴀᴛᴇs')
+                ],[
+                    InlineKeyboardButton('Hᴇʟᴘ ⚙️', callback_data='help'),
+                    InlineKeyboardButton('Aʙᴏᴜᴛ ✌️', callback_data='about')
+                ],[
+                    InlineKeyboardButton('Pʀᴇᴍɪᴜᴍ 💳', callback_data="premium_info"),
+                    InlineKeyboardButton('♻️ Exᴛʀᴀ Fᴇᴀᴛᴜʀᴇꜱ ✅', callback_data='extra')
+                ],[
+                    InlineKeyboardButton('⚜️ Rᴇꜰꜰᴇʀ & Gᴇᴛ Fʀᴇᴇ Pʀᴇᴍɪᴜᴍ ⚜️', callback_data="reffff")
+                  ]]
         else:
             buttons = [[
-                InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
-            ],[
-                InlineKeyboardButton('Eᴀʀɴ Mᴏɴᴇʏ 💸', callback_data="shortlink_info"),
-                InlineKeyboardButton('⌬ Mᴏᴠɪᴇ Gʀᴏᴜᴘ', url=GRP_LNK)
-            ],[
-                InlineKeyboardButton('〄 Hᴇʟᴘ', callback_data='help'),
-                InlineKeyboardButton('⍟ Aʙᴏᴜᴛ', callback_data='about')
-            ],[
-                InlineKeyboardButton('✇ Jᴏɪɴ Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ ✇', url=CHNL_LNK)
-            ]]
+                    InlineKeyboardButton('☆ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ☆', url=f'http://telegram.me/{temp.U_NAME}?startgroup=true')
+                ],[
+                    InlineKeyboardButton('💸 ᴇᴀʀɴ ᴍᴏɴᴇʏ 💸', callback_data="shortlink_info"),
+                    InlineKeyboardButton('✇ Sᴜᴘᴘᴏʀᴛ ✇', callback_data='JoinUᴘᴅᴀᴛᴇs')
+                ],[
+                    InlineKeyboardButton('Hᴇʟᴘ ⚙️', callback_data='help'),
+                    InlineKeyboardButton('Aʙᴏᴜᴛ ✌️', callback_data='about')
+                ],[
+                    InlineKeyboardButton('Pʀᴇᴍɪᴜᴍ 💳', callback_data="premium_info"),
+                    InlineKeyboardButton('♻️ Exᴛʀᴀ Fᴇᴀᴛᴜʀᴇꜱ ✅', callback_data='extra')
+                ],[
+                    InlineKeyboardButton('⚜️ Rᴇꜰꜰᴇʀ & Gᴇᴛ Fʀᴇᴇ Pʀᴇᴍɪᴜᴍ ⚜️', callback_data="reffff")
+                  ]]
         if CLONE_MODE == True:
             buttons.append([InlineKeyboardButton('🤖 Cʀᴇᴀᴛᴇ Yᴏᴜʀ Oᴡɴ Cʟᴏɴᴇ Bᴏᴛ 🤖', callback_data='clone')])
         reply_markup = InlineKeyboardMarkup(buttons)
