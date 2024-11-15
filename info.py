@@ -53,7 +53,7 @@ DELETE_CHANNELS = [int(dch) if id_pattern.search(dch) else dch for dch in enviro
 # MongoDB information
 MULTIPLE_DATABASE = bool(environ.get('MULTIPLE_DATABASE', False)) # Set True or False
 
-DATABASE_URI = environ.get('DATABASE_URI', "") # IF Multiple Database Is False Then Fill Only This Database Url.
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://AutoFilter:1055221@heartfilter.rrt16.mongodb.net/?retryWrites=true&w=majority&appName=HeartFilter") # IF Multiple Database Is False Then Fill Only This Database Url.
 if MULTIPLE_DATABASE == False:
     USER_DB_URI = DATABASE_URI
     OTHER_DB_URI = DATABASE_URI
@@ -65,8 +65,8 @@ else:
     FILE_DB_URI = environ.get('FILE_DB_URI', "") # This Db Is For File Data Store
     SEC_FILE_DB_URI = environ.get('SEC_FILE_DB_URI', "") # This Db is for File Data Store When First Db Is Going To Be Full.
     
-DATABASE_NAME = environ.get('DATABASE_NAME', "techvjfilterbot")
-COLLECTION_NAME = environ.get('COLLECTION_NAME', 'vjcollection')
+DATABASE_NAME = environ.get('DATABASE_NAME', "HeartFilter")
+COLLECTION_NAME = environ.get('COLLECTION_NAME', 'Telegramfiles')
 
 # Premium And Referal Settings
 PREMIUM_AND_REFERAL_MODE = bool(environ.get('PREMIUM_AND_REFERAL_MODE', True)) # Set Ture Or False
