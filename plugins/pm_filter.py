@@ -1945,63 +1945,37 @@ async def cb_handler(client: Client, query: CallbackQuery):
             fileName = {quote_plus(get_name(log_msg))}
             stream = f"{URL}watch/{str(log_msg.id)}/{quote_plus(get_name(log_msg))}?hash={get_hash(log_msg)}"
             download = f"{URL}{str(log_msg.id)}/{quote_plus(get_name(log_msg))}?hash={get_hash(log_msg)}"
+            
+            xo = await query.message.reply_text(f'🔐')
+            await asyncio.sleep(1)
+            await xo.delete()
 
-    # Remove or comment out these debugging lines
-    # print(f"JS_WEB_PREMIUM: {JS_WEB_PREMIUM}")
-    # has_premium = await db.has_premium_access(user_id)
-    # print(f"User ID: {user_id}, Has Premium Access: {has_premium}")
-
-       has_premium = await db.has_premium_access(user_id)
-
-    # Create the buttons based on the JS_WEB_PREMIUM and has_premium flags
-       if JS_WEB_PREMIUM and has_premium:
-          btn = [[
-               InlineKeyboardButton("Fᴀsᴛ Dᴏᴡɴʟᴏᴀᴅ", url=download),
-               InlineKeyboardButton("Wᴀᴛᴄʜ Oɴʟɪɴᴇ", url=online)
-               ], [
-               InlineKeyboardButton('🖥️ Watch On Telegram 🧿', web_app=WebAppInfo(url=online))
-               ], [
-               InlineKeyboardButton('❌ Cʟᴏsᴇ ❌', callback_data='close_data')
-               ]]
-       elif not JS_WEB_PREMIUM:
-        # Show buttons to everyone if JS_WEB_PREMIUM is False
-           btn = [[
-               InlineKeyboardButton("Fᴀsᴛ Dᴏᴡɴʟᴏᴀᴅ", url=download),
-               InlineKeyboardButton("Wᴀᴛᴄʜ Oɴʟɪɴᴇ", url=online)
-               ], [
-               InlineKeyboardButton('🖥️ Watch On Telegram 🧿', web_app=WebAppInfo(url=online))
-               ], [
-               InlineKeyboardButton('❌ Cʟᴏsᴇ ❌', callback_data='close_data')
-              ]]
-       else:
-        # Buttons or message for non-premium users if premium is enabled
-           btn = [[
-               InlineKeyboardButton("⭐️ Get Premium ", callback_data="seeplans")
-               ], [
-               InlineKeyboardButton("Gᴇᴛ Fʀᴇᴇ Tʀᴀɪʟ Fᴏʀ 𝟻 Mɪɴᴜᴛᴇꜱ ☺️", callback_data="get_trail")
-               ], [
-               InlineKeyboardButton('❌ Cʟᴏsᴇ ❌', callback_data='close_data')
-               ]]
-
-       await query.edit_message_reply_markup(
-          reply_markup=InlineKeyboardMarkup(btn)
-          )    
-       username = query.from_user.mention
-       await log_msg.reply_text(
-          text=f"#LinkGenerated\n\nIᴅ : <code>{user_id}</code>\nUꜱᴇʀɴᴀᴍᴇ : {username}\n\nNᴀᴍᴇ : {fileName}",
-          quote=True,
-          disable_web_page_preview=True,
-          reply_markup=InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton("🚀 Fᴀꜱᴛ Dᴏᴡɴʟᴏᴀᴅ", url=download),
-                InlineKeyboardButton('Wᴀᴛᴄʜ Oɴʟɪɴᴇ 🧿', url=online)
-            ] if JS_WEB_PREMIUM and has_premium else [
-                InlineKeyboardButton("🚀 Fᴀꜱᴛ Dᴏᴡɴʟᴏᴀᴅ", url=download),
-                InlineKeyboardButton('Wᴀᴛᴄʜ Oɴʟɪɴᴇ 🧿', url=online)
-            ]
-        ])
-       )
-
+            await log_msg.reply_text(
+                text=f"•• ʟɪɴᴋ ɢᴇɴᴇʀᴀᴛᴇᴅ ꜰᴏʀ ɪᴅ #{user_id} \n•• ᴜꜱᴇʀɴᴀᴍᴇ : {username} \n\n•• ᖴᎥᒪᗴ Nᗩᗰᗴ : {fileName}",
+                quote=True,
+                disable_web_page_preview=True,
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🚀 Fast Download 🚀", url=download),  # we download Link
+                                                    InlineKeyboardButton('🖥️ Watch online 🖥️', url=stream)]])  # web stream Link
+            )
+            button = [[
+                InlineKeyboardButton("🚀 Fast Download 🚀", url=download),
+                InlineKeyboardButton('🖥️ Watch online 🖥️', url=stream)
+            ],[
+                InlineKeyboardButton("• ᴡᴀᴛᴄʜ ɪɴ ᴡᴇʙ ᴀᴘᴘ •", web_app=WebAppInfo(url=stream))
+            ]]
+            await query.message.reply_text(
+                text="•• ʟɪɴᴋ ɢᴇɴᴇʀᴀᴛᴇᴅ ☠︎⚔",
+                quote=True,
+                disable_web_page_preview=True,
+                reply_markup=InlineKeyboardMarkup(button)
+            )
+        except Exception as e:
+            print(e)  # print the error message
+            await query.answer(f"☣something went wrong sweetheart\n\n{e}", show_alert=True)
+            return
+            
+    # don't change anything without contacting me @kingvj01      
+            
     elif query.data == "reqinfo":
         await query.answer(text=script.REQINFO, show_alert=True)
 
